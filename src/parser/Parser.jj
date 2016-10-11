@@ -1,0 +1,76 @@
+options{
+  STATIC=false;
+  LOOKAHEAD=1;
+}
+PARSER_BEGIN(Parser)
+package parser;
+public class Parser {
+  public static void main(String[] args) {
+    Parser prs = new Parser(System.in);
+    try {
+      prs.start();
+      System.out.println("Parsen Ok!");
+    }catch(ParseException e) {
+      System.out.println("fail");
+    }
+  }
+}
+PARSER_END(Parser)
+
+SKIP : { " " | "\t" | "\r" | "\n" }
+
+TOKEN : { < PLUS : "+" > }
+TOKEN : { < MINUS : "-" > }
+TOKEN : { < TIMES : "*" > }
+TOKEN : { < DIVIDE : "/" > }
+TOKEN : { < OPEN_PAR : "(" > }
+TOKEN : { < CLOSE_PAR : ")" > }
+TOKEN : { < EQUAL : "=" > }
+TOKEN : { < TTP : "^" > }
+
+TOKEN : { < VAR : "x" | "X" > }
+
+TOKEN : { < SIN : "sin" > | < COS : "cos" > }
+
+TOKEN : { < NUMBER : (["0"-"9"])+ ("." (["0"-"9"])+ )? >}
+
+void start() : { }
+{
+  expression()<EOF>
+}
+
+void expression() : {} 
+{
+  term()
+  (
+    sum()  )*
+}
+
+String term() : { Term derivat; }
+{
+  factor()
+  (
+    product()  )*
+  {
+    derivat = clr.getDerivativeOfTerm(); return derivat.toString();
+  }
+}
+
+void product() : {} 
+{
+  < TIMES >factor() | < DIVIDE >factor()
+}
+
+void sum() : { String trm; }
+{
+  < PLUS >term() | < MINUS >term() { output += output; }
+}
+
+void factor() : {} 
+{
+  < NUMBER >(< TTP >< NUMBER > | < VAR >(< TTP >< NUMBER >)?)?
+| < VAR >(< TTP ><NUMBER >)?
+| < OPEN_PAR > expression() < CLOSE_PAR >(< TTP >< NUMBER >)?
+| < SIN ><OPEN_PAR >expression()< CLOSE_PAR >(< TTP >< NUMBER >)?
+| < COS ><OPEN_PAR >expression()< CLOSE_PAR >(< TTP >< NUMBER >)?
+}
