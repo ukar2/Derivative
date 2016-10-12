@@ -225,6 +225,10 @@ public class Parser implements ParserConstants {
 		
 	}
 	
+	public void testeGit(){
+		System.out.println("ok");
+	}
+	
 	/** Generated Token Manager. */
 	public ParserTokenManager token_source;
 	SimpleCharStream jj_input_stream;
